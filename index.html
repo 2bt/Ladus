@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Ladus</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+}
+#canvas {
+  image-rendering: optimizespeed;
+  image-rendering: pixelated;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+
+
+(async () => {
+  const utf8Decoder = new TextDecoder("utf8");
+  const env = {
+    memory: new WebAssembly.Memory({ initial: 32 }),
+    print: (ptr) => {
+      let raw = new Uint8Array(env.memory.buffer, ptr);
+      const nul = raw.indexOf(0);
+      if (nul !== -1) raw = raw.subarray(0, nul);
+      console.log(utf8Decoder.decode(raw));
+    }
+  };
+
+  const response = await fetch("blob.wasm");
+  const buffer = await response.arrayBuffer();
+  const { instance } = await WebAssembly.instantiate(buffer, { env });
+
+  // init game
+  instance.exports.init();
+
+  const WIDTH   = instance.exports.width();
+  const HEIGHT  = instance.exports.height();
+  const canvas  = document.getElementById("canvas");
+  canvas.width  = WIDTH;
+  canvas.height = HEIGHT;
+  const ratio   = WIDTH / HEIGHT;
+
+  // resize
+  const resize = () => {
+    if (window.innerWidth / window.innerHeight < ratio) {
+      canvas.style.width  = window.innerWidth + "px";
+      canvas.style.height = window.innerWidth / ratio + "px";
+    }
+    else {
+      canvas.style.width  = window.innerHeight * ratio + "px";
+      canvas.style.height = window.innerHeight + "px";
+    }
+  };
+  resize();
+  window.addEventListener("resize", resize);
+
+  // input
+  const INPUT_KEYS = {
+    "ArrowLeft"  : 1,
+    "ArrowRight" : 2,
+    "ArrowUp"    : 4,
+    "ArrowDown"  : 8,
+    "KeyX"       : 16,
+    "KeyC"       : 32,
+    "KeyZ"       : 32,
+  };
+  let input = 0;
+  window.addEventListener("keydown", (e) => { input |=  INPUT_KEYS[e.code]; });
+  window.addEventListener("keyup",   (e) => { input &= ~INPUT_KEYS[e.code]; });
+
+  // run game
+  const ctx    = canvas.getContext('2d', { alpha: false, antialias: false, depth: false });
+//  const array  = new Uint8ClampedArray(env.memory.buffer, instance.exports.pixels(), WIDTH * HEIGHT * 4);
+//  const img    = new ImageData(array, WIDTH, HEIGHT);
+  const update = () => {
+    instance.exports.update(input);
+    const array = new Uint8ClampedArray(env.memory.buffer, instance.exports.pixels(), WIDTH * HEIGHT * 4);
+    const img   = new ImageData(array, WIDTH, HEIGHT);
+    ctx.putImageData(img, 0, 0);
+    window.requestAnimationFrame(update);
+  };
+  update();
+
+})();
+
+</script>
+</body>
+</html>
