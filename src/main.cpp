@@ -52,8 +52,9 @@ int main() {
         bits |= !!ks[SDL_SCANCODE_RIGHT] << 1;
         bits |= !!ks[SDL_SCANCODE_UP   ] << 2;
         bits |= !!ks[SDL_SCANCODE_DOWN ] << 3;
-        bits |= !!ks[SDL_SCANCODE_X    ] << 4;
-        bits |= !!ks[SDL_SCANCODE_C    ] << 5;
+        bits |= !!ks[SDL_SCANCODE_Z    ] << 4;
+        bits |= !!ks[SDL_SCANCODE_C    ] << 4;
+        bits |= !!ks[SDL_SCANCODE_X    ] << 5;
 
         app::update(bits);
         app::draw();

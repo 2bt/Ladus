@@ -27,8 +27,13 @@ public:
     }
     void remove(int i = -1) {
         T* p = i < 0 ? m_end + i : m_begin + i;
+        assert(p >= m_begin && p < m_end);
         --m_end;
         for (; p < m_end; ++p) *p = p[1];
+    }
+    void shrink(int l) {
+        assert(l <= len());
+        m_end = m_begin + l;
     }
     void clear() {
         m_end = m_begin;

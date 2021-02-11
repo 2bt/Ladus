@@ -104,7 +104,8 @@ void app::draw() {
 
     world::draw();
 
-    print(4, HEIGHT - 12, "press X to jump");
+    print(4, HEIGHT - 20, "press Z/C to jump");
+    print(4, HEIGHT - 10, "press X to shoot");
 }
 
 

@@ -9,14 +9,17 @@ struct Input {
     bool prev_jump, prev_shoot;
 
     bool jump_just_pressed() const { return jump && !prev_jump; }
+    bool shoot_just_pressed() const { return shoot && !prev_shoot; }
 };
 
 
 namespace app {
 
     enum {
-        WIDTH  = 320,
-        HEIGHT = 180,
+//        WIDTH  = 320,
+//        HEIGHT = 180,
+        WIDTH  = 384,
+        HEIGHT = 216,
     };
 
     extern Surface screen;

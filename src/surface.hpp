@@ -14,7 +14,8 @@ inline uint32_t color(int r, int g, int b, int a=255) {
 
 struct Rect {
     int x, y, w, h;
-
+    int center_x() const { return x + w / 2; }
+    int center_y() const { return y + h / 2; }
     bool overlap(Rect const& r) const {
         return !(x >= r.x + r.w || y >= r.y + r.h || x + w <= r.x || y + h <= r.y);
     }

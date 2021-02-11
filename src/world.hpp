@@ -6,7 +6,7 @@
 
 enum {
     TILE_SIZE  = 16,
-    ROOM_WIDTH = 20,
+    ROOM_WIDTH = 24,
 };
 
 namespace world {
