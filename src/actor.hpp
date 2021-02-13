@@ -1,6 +1,6 @@
 #pragma once
 
-#include "surface.hpp"
+#include "util.hpp"
 
 
 enum class ActorType {
@@ -43,6 +43,8 @@ public:
     };
 
     Player() : Actor(ActorType::Player) {}
+
+    void boost() { m_vy = -5.5; }
 
     void init(int x, int y);
     void update();

@@ -40,13 +40,9 @@ void Solid::update() {
 }
 
 void Solid::draw() const {
-
-//    app::screen.rect_filled(m_rect, color(60, 50, 80));
-//    app::screen.rect(m_rect, color(50, 40, 60));
-
-    app::screen.copy(g_tile_surf,
-                     {m_jumpthrough * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE},
-                     m_rect.x, m_rect.y);
+    app::screen.copy(g_tile_surf, {m_jumpthrough * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE},
+                     m_rect.x - world::camera.x,
+                     m_rect.y - world::camera.y);
 }
 
 void Solid::move(int x, int y) {

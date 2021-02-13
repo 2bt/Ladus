@@ -2,23 +2,14 @@
 
 namespace {
 
-uint32_t g_next = 1;
+Random g_random;
 
 } // namespace
 
-void* operator new(size_t size) {
-    return malloc(size);
-}
 
-void operator delete(void* ptr) {
-    free(ptr);
-}
+int   rand_int(int a, int b)       { return g_random.rand_int(a, b); }
+float rand_float(float a, float b) { return g_random.rand_float(a, b); }
 
-int rand() {
-    g_next = g_next * 1103515245 + 12345;
-    return (uint32_t)(g_next / 65536) % (RAND_MAX + 1);
-}
 
-void srand(uint32_t seed) {
-    g_next = seed;
-}
+void* operator new(size_t size) { return malloc(size); }
+void operator delete(void* ptr) { free(ptr); }

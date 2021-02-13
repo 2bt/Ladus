@@ -1,37 +1,6 @@
 #pragma once
 
-#include "stdwasm.hpp"
 #include "util.hpp"
-
-
-inline uint32_t color(int r, int g, int b, int a=255) {
-    return (clamp(a, 0, 255) << 24)
-         | (clamp(b, 0, 255) << 16)
-         | (clamp(g, 0, 255) <<  8)
-         | (clamp(r, 0, 255) <<  0);
-}
-
-
-struct Rect {
-    int x, y, w, h;
-    int center_x() const { return x + w / 2; }
-    int center_y() const { return y + h / 2; }
-    bool overlap(Rect const& r) const {
-        return !(x >= r.x + r.w || y >= r.y + r.h || x + w <= r.x || y + h <= r.y);
-    }
-    int overlap_x(Rect const& r) const {
-        if (!overlap(r)) return 0;
-        int s = r.x + r.w - x;
-        int t = r.x - w - x;
-        return abs(s) < abs(t) ? s : t;
-    }
-    int overlap_y(Rect const& r) const {
-        if (!overlap(r)) return 0;
-        int s = r.y + r.h - y;
-        int t = r.y - h - y;
-        return abs(s) < abs(t) ? s : t;
-    }
-};
 
 
 class Surface {

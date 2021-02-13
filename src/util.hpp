@@ -11,20 +11,68 @@ template <class T> T sign(T const& x) { return (x > 0) - (x < 0); }
 void* operator new(size_t size);
 void operator delete(void* ptr);
 
-#ifdef RAND_MAX
-#undef RAND_MAX
-#endif
+inline int round_to_int(float f) {
+    return int(f + 0.50001f - (f < 0));
+}
 
-enum {
-    RAND_MAX = 32767
+struct Random {
+    enum { MAX = 32767 };
+    uint32_t seed = 1;
+    int rand() {
+        seed = seed * 1103515245 + 12345;
+        return (uint32_t)(seed / 65536) % (MAX + 1);
+    }
+    inline int rand_int(int a, int b) {
+        return a + rand() * (b - a) / MAX;
+    }
+    inline float rand_float(float a, float b) {
+        return a + rand() * (b - a) * (1.0f / MAX);
+    }
 };
 
-int  rand();
-void srand(uint32_t seed);
 
-inline int rand_int(int a, int b) {
-    return a + rand() * (b - a) / RAND_MAX;
+int rand_int(int a, int b);
+float rand_float(float a, float b);
+
+
+inline uint32_t color(int r, int g, int b, int a=255) {
+    return (clamp(a, 0, 255) << 24)
+         | (clamp(b, 0, 255) << 16)
+         | (clamp(g, 0, 255) <<  8)
+         | (clamp(r, 0, 255) <<  0);
 }
-inline float rand_float(float a, float b) {
-    return a + rand() * (b - a) * (1.0f / RAND_MAX);
-}
+
+
+struct Rect {
+    int x, y, w, h;
+    int left() const { return x; }
+    int right() const { return x + w; }
+    int top() const { return y; }
+    int bottom() const { return y + h; }
+    bool contains(int px, int py) const {
+        return px >= x && px < right() && py >= y && py < bottom();
+    }
+
+    int center_x() const { return x + w / 2; }
+    int center_y() const { return y + h / 2; }
+    Rect relative(Rect const& r) const {
+        return {x - r.x, y - r.y, w, h};
+    }
+    bool overlap(Rect const& r) const {
+        return !(x >= r.right() || y >= r.bottom() || right() <= r.x || bottom() <= r.y);
+    }
+    int overlap_x(Rect const& r) const {
+        if (!overlap(r)) return 0;
+        int s = r.right() - x;
+        int t = r.x - right();
+        return abs(s) < abs(t) ? s : t;
+    }
+    int overlap_y(Rect const& r) const {
+        if (!overlap(r)) return 0;
+        int s = r.bottom() - y;
+        int t = r.y - bottom();
+        return abs(s) < abs(t) ? s : t;
+    }
+};
+
+

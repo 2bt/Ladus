@@ -11,6 +11,7 @@ enum {
 
 namespace world {
 
+    extern Rect           camera;
     extern Player*        player;
     extern Vector<Actor*> actors;
     extern Vector<Solid*> solids;
