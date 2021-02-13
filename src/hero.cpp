@@ -1,6 +1,7 @@
 #include "hero.hpp"
 #include "app.hpp"
 #include "world.hpp"
+#include "foe.hpp"
 
 
 constexpr float GRAVITY = 0.333333333f;
@@ -14,12 +15,7 @@ void Hero::init(int x, int y) {
         HEIGHT = 20,
     };
 
-    m_rect = {
-        x - WIDTH / 2,
-        y - HEIGHT,
-        WIDTH,
-        HEIGHT,
-    };
+    m_rect = { x - WIDTH / 2, y - HEIGHT, WIDTH, HEIGHT };
 
     m_rx       = 0;
     m_ry       = 0;
@@ -82,9 +78,8 @@ void Hero::update() {
                                         m_dir));
     }
 }
-
 void Hero::draw() const {
-    app::screen.rect(m_rect.relative(world::camera), color(200, 200, 0));
+    app::screen.rect(m_rect.relative(world::camera), Color(200, 200, 0));
 }
 
 
@@ -95,11 +90,22 @@ void Bullet::update() {
         for (int i = 0; i < 10; ++i) {
             world::actors.append(new Particle(m_rect.center_x() + m_dir * 4, m_rect.center_y()));
         }
+        return;
     }
 
     if (!m_rect.overlap(world::camera)) {
         m_alive = false;
     }
+}
+void Bullet::collide(Actor* a) {
+    m_alive = false;
+    for (int i = 0; i < 10; ++i) {
+        world::actors.append(new Particle(m_rect.center_x() + m_dir * 4, m_rect.center_y()));
+    }
+
+}
+void Bullet::draw() const {
+    app::screen.rect(m_rect.relative(world::camera), Color(200, 200, 200));
 }
 
 
@@ -131,5 +137,8 @@ void Particle::update() {
             m_ry = 0;
         }
     }
+}
+void Particle::draw() const {
+    app::screen.rect(m_rect.relative(world::camera), Color(200, 200, 200));
 }
 

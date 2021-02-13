@@ -43,7 +43,7 @@ int rand_int(int a, int b);
 float rand_float(float a, float b);
 
 
-inline uint32_t color(int r, int g, int b, int a=255) {
+inline uint32_t Color(int r, int g, int b, int a=255) {
     return (clamp(a, 0, 255) << 24)
          | (clamp(b, 0, 255) << 16)
          | (clamp(g, 0, 255) <<  8)

@@ -8,6 +8,7 @@ public:
     Hero() : Actor(ActorType::Hero) {}
     void init(int x, int y);
     void update();
+    void collide(Actor* a) {}
     void draw() const;
 
     void boost() { m_vy = -5.5; }
@@ -24,11 +25,13 @@ private:
 
 class Bullet : public Actor {
 public:
-    Bullet(int x, int y, int dir) : Actor(ActorType::Bullet) {
+    Bullet(int x, int y, int dir) : Actor(ActorType::Bullet, Mask(ActorType::Foe)) {
         m_rect = { x - 5, y - 1, 10, 2 };
         m_dir  = dir;
     }
     void update();
+    void collide(Actor* a);
+    void draw() const;
 private:
     int m_dir;
 };
@@ -38,6 +41,8 @@ class Particle : public Actor {
 public:
     Particle(int x, int y);
     void update();
+    void collide(Actor* a) {}
+    void draw() const;
 private:
     float m_rx = 0;
     float m_ry = 0;

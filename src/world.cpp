@@ -1,7 +1,9 @@
 #include "world.hpp"
 #include "actor.hpp"
+#include "foe.hpp"
 #include "vector.hpp"
 #include "app.hpp"
+
 
 using namespace world;
 namespace {
@@ -26,14 +28,14 @@ Room g_rooms[] = {
         "0.....................00"
         "0.....................00"
         "0.....................00"
-        "0.....................00"
+        "0................F....00"
         "0.............0^^^000000"
         "0........^^^..0...0....."
         "0.............0...0....."
         "0000^^^................."
         "0......................."
         "0......................."
-        "0...@..................."
+        "0...@.........F........."
         "000000^^^000000000000000"
         "000000...000000000000000"
     },
@@ -48,8 +50,8 @@ Room g_rooms[] = {
         ".......................0"
         ".......................0"
         ".......................0"
-        ".......................0"
-        "..................000000"
+        "....................F..0"
+        "...............F..000000"
         "..............0000000000"
         "0000000000....0000000000"
         "0000000000....0000000000"
@@ -57,14 +59,14 @@ Room g_rooms[] = {
     {
         {0, 14, 56, 14},
         "000000...0000000000000000000000000....000000000000000000"
-        "000000...0000000000000000000000.........0000000000000000"
+        "000000...0000000000000000000000.........0000000........0"
         "0....0....................................000..........0"
         "0....0....................................000..........0"
         "0....0^^^^0000............................000..........0"
-        "0..........00..........................................0"
+        "0..........00.......................................^^^0"
         "0..........00.....00...................................0"
-        "0..........00^^^^^00...................................0"
-        "000.....................000000.........................0"
+        "0..........00^^^^^00.............................F.....0"
+        "000..F..................000000..................^^^^...0"
         "0000000 ................000000.........................0"
         "0000000 ....@...........000000.........................0"
         "00000000000000000000000000000000000000000000000000000000"
@@ -92,8 +94,15 @@ void update_camera() {
 void load_room(Room const* room) {
     g_current_room = room;
 
-    bool init_player = !hero;
-    if (init_player) {
+    g_room_boundary = {
+        room->rect.x * TILE_SIZE,
+        room->rect.y * TILE_SIZE,
+        room->rect.w * TILE_SIZE,
+        room->rect.h * TILE_SIZE - TILE_SIZE / 2,
+    };
+
+    bool init_hero = !hero;
+    if (init_hero) {
         hero = new Hero;
         actors.append(hero);
     }
@@ -102,30 +111,21 @@ void load_room(Room const* room) {
     for (int c = 0; c < room->rect.w; ++c) {
         char t = room->tile(c, r);
         if (t == '.') continue;
-        int x = (room->rect.x + c) * TILE_SIZE;
-        int y = (room->rect.y + r) * TILE_SIZE;
+        int sx = (room->rect.x + c) * TILE_SIZE;
+        int sy = (room->rect.y + r) * TILE_SIZE;
 
-        if (t == '0') {
-            solids.append(new Solid(x, y));
-        }
-        if (t == '^') {
-            solids.append(new Solid(x, y, true));
-        }
+        int ax = sx + TILE_SIZE / 2;
+        int ay = sy + TILE_SIZE;
 
-        else if (t == '@' && init_player) {
-            hero->init(x + TILE_SIZE / 2, y + TILE_SIZE);
+        if      (t == '0') solids.append(new Solid(sx, sy));
+        else if (t == '^') solids.append(new Solid(sx, sy, true));
+        else if (t == 'F') actors.append(new Foe(ax, ay));
+        else if (t == '@' && init_hero) {
+            hero->init(ax, ay);
             camera.x = hero->rect().center_x() - camera.w / 2;
             camera.y = hero->rect().center_y() - camera.h / 2;
         }
     }
-
-    g_room_boundary = {
-        room->rect.x * TILE_SIZE,
-        room->rect.y * TILE_SIZE,
-        room->rect.w * TILE_SIZE,
-        room->rect.h * TILE_SIZE - TILE_SIZE / 2,
-    };
-
 }
 
 
@@ -144,7 +144,7 @@ void delete_if(Vector<T*>& vec, Func const& f) {
 
 class {
 public:
-
+    bool active() const { return value > 0; }
     bool update() {
         if (value == 0) {
 
@@ -228,10 +228,22 @@ void world::update() {
 
     for (Solid* s : solids) s->update();
 
-    delete_if(actors, [&](int i) {
-        actors[i]->update();
-        return !actors[i]->alive();
-    });
+    for (Actor* a : actors) a->update();
+
+
+    // actor collision
+    for (int i = 0; i < actors.len() - 1; ++i) {
+        Actor* a = actors[i];
+        if (!a->alive()) continue;
+        for (int j = i + 1; j < actors.len(); ++j) {
+            Actor* b = actors[j];
+            if (!b->alive()) continue;
+            if (!a->rect().overlap(b->rect())) continue;
+            if (a->mask() & Mask(b->type())) a->collide(b);
+            if (b->mask() & Mask(a->type())) b->collide(b);
+        }
+    }
+    delete_if(actors, [&](int i) { return !actors[i]->alive(); });
 
 
     update_camera();
@@ -241,4 +253,9 @@ void world::update() {
 void world::draw() {
     for (Solid* s : solids) s->draw();
     for (Actor* a : actors) a->draw();
+
+
+    if (g_current_room == &g_rooms[0] && !g_transition.active()) {
+        app::print(4, 4, "press Z/C to jump and X to shoot");
+    }
 }

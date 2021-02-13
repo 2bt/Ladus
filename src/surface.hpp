@@ -20,10 +20,10 @@ public:
         m_pixels[x + y * m_width] = color;
     }
 
-    void hline(int x1, int x2, int y, uint32_t color);
-    void vline(int x, int y1, int y2, uint32_t color);
-    void rect(Rect const& rect, uint32_t color);
-    void rect_filled(Rect const& rect, uint32_t color);
+    void hline(int x1, int x2, int y, uint32_t Color);
+    void vline(int x, int y1, int y2, uint32_t Color);
+    void rect(Rect const& rect, uint32_t Color);
+    void rect_filled(Rect const& rect, uint32_t Color);
 
 //    enum Flip {
 //        F_V = 1,

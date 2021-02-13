@@ -99,13 +99,10 @@ void app::draw() {
     for (int y = 0; y < HEIGHT; ++y)
     for (int x = 0; x < WIDTH; ++x) {
         int b = ((x + g_tick / 2) / 12 % 31 ^ (y + g_tick / 2) / 12 % 29) % 11 % 3;
-        screen.pixel(x, y, color(10, 7 + b * 10,  b * 15));
+        screen.pixel(x, y, Color(10, 7 + b * 10,  b * 15));
     }
 
     world::draw();
-
-    print(4, HEIGHT - 20, "press Z/C to jump");
-    print(4, HEIGHT - 10, "press X to shoot");
 }
 
 

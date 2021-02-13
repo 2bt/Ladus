@@ -1,30 +1,28 @@
 #include "actor.hpp"
 #include "hero.hpp"
+#include "foe.hpp"
 #include "app.hpp"
 #include "world.hpp"
 
 
-void Actor::update() {
-    switch (m_type) {
-    case ActorType::Hero:   get<Hero>()->update(); break;
-    case ActorType::Bullet:   get<Bullet>()->update(); break;
-    case ActorType::Particle: get<Particle>()->update(); break;
-    }
-}
+#define DISPATCH(T, F) case ActorType::T: get<T>()->F; break;
+#define DISTATCH_UPDATE(T)  DISPATCH(T, update());
+#define DISTATCH_DRAW(T)    DISPATCH(T, draw());
+#define DISTATCH_COLLIDE(T) DISPATCH(T, collide(a));
 
+
+void Actor::update() {
+    switch (m_type) { ACTORS(DISTATCH_UPDATE); }
+}
 
 void Actor::draw() const {
-    switch (m_type) {
-    case ActorType::Hero: get<Hero>()->draw(); break;
-    case ActorType::Bullet:
-    case ActorType::Particle:
-        app::screen.rect(m_rect.relative(world::camera), color(200, 200, 200));
-        break;
-    default:
-        app::screen.rect(m_rect.relative(world::camera), color(200, 0, 0));
-        break;
-    }
+    switch (m_type) { ACTORS(DISTATCH_DRAW); }
 }
+
+void Actor::collide(Actor* a) {
+    switch (m_type) { ACTORS(DISTATCH_COLLIDE); }
+}
+
 
 bool Actor::move_x(int d) {
     m_rect.x += d;
