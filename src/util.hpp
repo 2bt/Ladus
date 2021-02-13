@@ -15,6 +15,14 @@ inline int round_to_int(float f) {
     return int(f + 0.50001f - (f < 0));
 }
 
+inline float mix(float a, float b, float x) {
+    return a + (b - a) * x;
+}
+
+inline float smooth(float x) {
+    return x * x * (3 - 2 * x);
+}
+
 struct Random {
     enum { MAX = 32767 };
     uint32_t seed = 1;

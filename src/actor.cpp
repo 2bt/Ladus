@@ -1,17 +1,29 @@
 #include "actor.hpp"
+#include "hero.hpp"
 #include "app.hpp"
 #include "world.hpp"
 
 
 void Actor::update() {
-    if (m_type == ActorType::Player) get<Player>()->update();
-    if (m_type == ActorType::Bullet) get<Bullet>()->update();
-    if (m_type == ActorType::Particle) get<Particle>()->update();
+    switch (m_type) {
+    case ActorType::Hero:   get<Hero>()->update(); break;
+    case ActorType::Bullet:   get<Bullet>()->update(); break;
+    case ActorType::Particle: get<Particle>()->update(); break;
+    }
 }
 
 
 void Actor::draw() const {
-    app::screen.rect(m_rect.relative(world::camera), color(200, 200, 0));
+    switch (m_type) {
+    case ActorType::Hero: get<Hero>()->draw(); break;
+    case ActorType::Bullet:
+    case ActorType::Particle:
+        app::screen.rect(m_rect.relative(world::camera), color(200, 200, 200));
+        break;
+    default:
+        app::screen.rect(m_rect.relative(world::camera), color(200, 0, 0));
+        break;
+    }
 }
 
 bool Actor::move_x(int d) {
@@ -41,123 +53,3 @@ bool Actor::move_y(int d) {
     return true;
 }
 
-
-
-void Player::init(int x, int y) {
-    m_rect = {
-        x - WIDTH / 2,
-        y - HEIGHT,
-        WIDTH,
-        HEIGHT,
-    };
-
-    m_rx       = 0;
-    m_ry       = 0;
-    m_vx       = 0;
-    m_vy       = 0;
-    m_airborne = true;
-    m_dir      = 1;
-}
-
-constexpr float GRAVITY = 0.333333333f;
-constexpr float MAX_VX  = 2.0f;
-constexpr float MAX_VY  = 4.5f;
-
-
-void Player::update() {
-
-
-    if (app::input.x != 0) m_dir = app::input.x;
-
-    if (!m_airborne) {
-        m_vx = clamp(MAX_VX * app::input.x, m_vx - 1.0f, m_vx + 1.0f);
-    }
-    else {
-        m_vx = clamp(MAX_VX * app::input.x, m_vx - 0.5f, m_vx + 0.5f);
-    }
-
-    m_rx += m_vx;
-    int mx = round_to_int(m_rx);
-    if (mx != 0) {
-        m_rx -= mx;
-        if (move_x(mx)) {
-            m_vx = 0;
-            m_rx = 0;
-        }
-    }
-
-    if (!m_airborne) {
-        if (app::input.jump_just_pressed()) {
-            m_vy = -7.33333333f;
-            m_ry = 0;
-            m_airborne = true;
-        }
-    }
-
-    m_vy += GRAVITY;
-    m_ry += clamp(m_vy, -MAX_VY, MAX_VY);
-    int my = round_to_int(m_ry);
-    if (my != 0) {
-        m_ry -= my;
-        if (move_y(my)) {
-            m_vy = 0;
-            m_ry = 0;
-            m_airborne = false;
-        }
-        else {
-            m_airborne = true;
-        }
-    }
-
-    if (app::input.shoot_just_pressed()) {
-        world::actors.append(new Bullet(m_rect.center_x() + m_dir * 5,
-                                        m_rect.center_y(),
-                                        m_dir));
-    }
-}
-
-
-void Bullet::update() {
-
-    if (move_x(m_dir * 6)) {
-        m_alive = false;
-        for (int i = 0; i < 10; ++i) {
-            world::actors.append(new Particle(m_rect.center_x() + m_dir * 4, m_rect.center_y()));
-        }
-    }
-
-    if (!m_rect.overlap(world::camera)) {
-        m_alive = false;
-    }
-}
-
-
-Particle::Particle(int x, int y) : Actor(ActorType::Particle) {
-    m_rect = { x - 1, y - 1, 2, 2 };
-    m_vx   = rand_float(-4, 2);
-    m_vy   = rand_float(-4, 1);
-    m_ttl  = rand_int(1, 8);
-}
-void Particle::update() {
-
-    m_alive = m_ttl-- > 0;
-
-    m_rx += m_vx;
-    int mx = round_to_int(m_rx);
-    m_rx -= mx;
-    if (move_x(mx)) {
-        m_vx *= -0.9;
-        m_rx = 0;
-    }
-
-    m_vy += GRAVITY;
-    m_ry += clamp(m_vy, -MAX_VY, MAX_VY);
-    int my = round_to_int(m_ry);
-    if (my != 0) {
-        m_ry -= my;
-        if (move_y(my)) {
-            m_vy *= -0.9;
-            m_ry = 0;
-        }
-    }
-}

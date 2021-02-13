@@ -16,8 +16,9 @@ add_executable(ladus
     src/util.cpp
     src/app.cpp
     src/world.cpp
-    src/actor.cpp
     src/solid.cpp
+    src/actor.cpp
+    src/hero.cpp
     )
 
 target_include_directories(ladus PRIVATE

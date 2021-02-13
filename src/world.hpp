@@ -1,6 +1,6 @@
 #pragma once
 
-#include "actor.hpp"
+#include "hero.hpp"
 #include "solid.hpp"
 #include "vector.hpp"
 
@@ -12,7 +12,7 @@ enum {
 namespace world {
 
     extern Rect           camera;
-    extern Player*        player;
+    extern Hero*          hero;
     extern Vector<Actor*> actors;
     extern Vector<Solid*> solids;
 

@@ -46,7 +46,7 @@ const uint8_t FONT_DATA[] = {
 
 
 Surface g_font_surf;
-int     g_tick;
+int     g_tick = 999;
 
 
 
@@ -98,8 +98,8 @@ void app::draw() {
 //    screen.rect_filled({0, 0, WIDTH, HEIGHT}, 0);
     for (int y = 0; y < HEIGHT; ++y)
     for (int x = 0; x < WIDTH; ++x) {
-        bool b = ((x + g_tick) / 8  ^ (y - g_tick / 4 - 200) / 8) % 2;
-        screen.pixel(x, y, color(b * 10, 0, b * 10));
+        int b = ((x + g_tick / 2) / 12 % 31 ^ (y + g_tick / 2) / 12 % 29) % 11 % 3;
+        screen.pixel(x, y, color(10, 7 + b * 10,  b * 15));
     }
 
     world::draw();

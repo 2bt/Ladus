@@ -22,7 +22,8 @@ struct Room {
 Room g_rooms[] = {
     {
         {0, 0, 24, 14},
-        "000000................00"
+        "000000000000000000000000"
+        "0.....................00"
         "0.....................00"
         "0.....................00"
         "0.....................00"
@@ -31,9 +32,8 @@ Room g_rooms[] = {
         "0.............0...0....."
         "0000^^^................."
         "0......................."
-        "0...,,.................."
-        "0.........@............."
-        "000000...000000000000000"
+        "0......................."
+        "0...@..................."
         "000000^^^000000000000000"
         "000000...000000000000000"
     },
@@ -41,16 +41,16 @@ Room g_rooms[] = {
         {24, 0, 24, 14},
         "000000...............000"
         "000000...............000"
+        "0000.................000"
         "000..................000"
-        "000..................000"
-        "0....................000"
-        "......................00"
+        "00...................000"
+        "0.....................00"
         ".......................0"
         ".......................0"
         ".......................0"
         ".......................0"
         "..................000000"
-        "0000000000....0000000000"
+        "..............0000000000"
         "0000000000....0000000000"
         "0000000000....0000000000"
     },
@@ -80,8 +80,8 @@ Rect        g_room_boundary;
 
 
 void update_camera() {
-    int x = player->rect().center_x() - camera.w / 2;
-    int y = player->rect().center_y() - camera.h / 2;
+    int x = hero->rect().center_x() - camera.w / 2;
+    int y = hero->rect().center_y() - camera.h / 2;
     camera.x = clamp(camera.x, x - 40, x + 40);
     camera.y = clamp(camera.y, y - 30, y + 30);
     camera.x = clamp(camera.x, g_room_boundary.x, g_room_boundary.right() - camera.w);
@@ -92,10 +92,10 @@ void update_camera() {
 void load_room(Room const* room) {
     g_current_room = room;
 
-    bool init_player = !player;
+    bool init_player = !hero;
     if (init_player) {
-        player = new Player;
-        actors.append(player);
+        hero = new Hero;
+        actors.append(hero);
     }
 
     for (int r = 0; r < room->rect.h; ++r)
@@ -113,9 +113,9 @@ void load_room(Room const* room) {
         }
 
         else if (t == '@' && init_player) {
-            player->init(x + TILE_SIZE / 2, y + TILE_SIZE);
-            camera.x = player->rect().center_x() - camera.w / 2;
-            camera.y = player->rect().center_y() - camera.h / 2;
+            hero->init(x + TILE_SIZE / 2, y + TILE_SIZE);
+            camera.x = hero->rect().center_x() - camera.w / 2;
+            camera.y = hero->rect().center_y() - camera.h / 2;
         }
     }
 
@@ -141,14 +141,6 @@ void delete_if(Vector<T*>& vec, Func const& f) {
 
 
 
-float mix(float a, float b, float x) {
-    return a + (b - a) * x;
-}
-
-float smooth(float x) {
-    return x * x * (3 - 2 * x);
-}
-
 
 class {
 public:
@@ -157,40 +149,28 @@ public:
         if (value == 0) {
 
             // did we exit the room?
-            int x = player->rect().center_x() / TILE_SIZE;
-            int y = player->rect().center_y() / TILE_SIZE;
+            int x = hero->rect().center_x() / TILE_SIZE;
+            int y = hero->rect().center_y() / TILE_SIZE;
             if (g_current_room->rect.contains(x, y)) return false;
 
             // find new room
             for (Room const* r = g_rooms; r->data; ++r) {
                 if (r == g_current_room) continue;
-                if (r->data == nullptr) break;
                 if (r->rect.contains(x, y)) {
-
-                    // boost player up
-                    if (y < g_current_room->rect.y) {
-                        player->boost();
-                    }
-
+                    // boost hero up
+                    if (y < g_current_room->rect.y) hero->boost();
 
                     value = 1;
-
                     old_actors = actors.len();
                     old_solids = solids.len();
-
                     load_room(r);
-
                     ox = camera.x;
                     oy = camera.y;
-
                     update_camera();
-
                     nx = camera.x;
                     ny = camera.y;
-
                     camera.x = ox;
                     camera.y = oy;
-
                     break;
                 }
             }
@@ -203,7 +183,7 @@ public:
             value = 0;
 
             delete_if(actors, [this](int i) {
-                return i < old_actors && actors[i]->type() != ActorType::Player;
+                return i < old_actors && actors[i]->type() != ActorType::Hero;
             });
             delete_if(solids, [this](int i) {
                 return i < old_solids;
@@ -230,7 +210,7 @@ private:
 
 
 Rect           world::camera = {0, 0, app::WIDTH, app::HEIGHT};
-Player*        world::player;
+Hero*          world::hero;
 Vector<Solid*> world::solids;
 Vector<Actor*> world::actors;
 
@@ -241,14 +221,9 @@ void world::init() {
 }
 
 
-
-
-
 void world::update() {
 
-
     if (g_transition.update()) return;
-
 
 
     for (Solid* s : solids) s->update();
@@ -260,8 +235,8 @@ void world::update() {
 
 
     update_camera();
-
 }
+
 
 void world::draw() {
     for (Solid* s : solids) s->draw();
