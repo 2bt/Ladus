@@ -1,5 +1,6 @@
 CX = clang++
-CF = -Wall -Oz --target=wasm32 -nostdlib -flto -fno-exceptions
+CF = -Wall --target=wasm32 -nostdlib -flto -fno-exceptions
+CF += -Oz
 CF += -fno-threadsafe-statics
 CF += -fvisibility=hidden
 CF += -ffunction-sections

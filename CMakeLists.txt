@@ -19,6 +19,7 @@ add_executable(ladus
     src/solid.cpp
     src/actor.cpp
     src/hero.cpp
+    src/foe.cpp
     )
 
 target_include_directories(ladus PRIVATE

@@ -31,11 +31,11 @@ Room g_rooms[] = {
         "0................F....00"
         "0.............0^^^000000"
         "0........^^^..0...0....."
-        "0.............0...0....."
+        "0...@.........0...0....."
         "0000^^^................."
         "0......................."
         "0......................."
-        "0...@.........F........."
+        "0.............F........."
         "000000^^^000000000000000"
         "000000...000000000000000"
     },
@@ -141,16 +141,15 @@ void delete_if(Vector<T*>& vec, Func const& f) {
 
 
 
-
 class {
 public:
     bool active() const { return value > 0; }
     bool update() {
-        if (value == 0) {
 
+        if (value == 0) {
             // did we exit the room?
             int x = hero->rect().center_x() / TILE_SIZE;
-            int y = hero->rect().center_y() / TILE_SIZE;
+            int y = (hero->rect().bottom() - 2)  / TILE_SIZE;
             if (g_current_room->rect.contains(x, y)) return false;
 
             // find new room
@@ -228,8 +227,10 @@ void world::update() {
 
     for (Solid* s : solids) s->update();
 
-    for (Actor* a : actors) a->update();
-
+    // use index becaue the vector may grow during updates
+    for (int i = 0; i < actors.len(); ++i) {
+        actors[i]->update();
+    }
 
     // actor collision
     for (int i = 0; i < actors.len() - 1; ++i) {
@@ -241,9 +242,10 @@ void world::update() {
             if (!a->rect().overlap(b->rect())) continue;
             if (a->mask() & Mask(b->type())) a->collide(b);
             if (b->mask() & Mask(a->type())) b->collide(b);
+            if (!a->alive()) break;
         }
     }
-    delete_if(actors, [&](int i) { return !actors[i]->alive(); });
+    delete_if(actors, [](int i) { return !actors[i]->alive(); });
 
 
     update_camera();
@@ -251,9 +253,9 @@ void world::update() {
 
 
 void world::draw() {
+
     for (Solid* s : solids) s->draw();
     for (Actor* a : actors) a->draw();
-
 
     if (g_current_room == &g_rooms[0] && !g_transition.active()) {
         app::print(4, 4, "press Z/C to jump and X to shoot");

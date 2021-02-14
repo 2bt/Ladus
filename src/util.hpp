@@ -8,20 +8,9 @@ template <class T> T clamp(T const& v, T const& mi, T const& ma) { return max(mi
 template <class T> T abs(T const& x) { return x < 0 ? -x : x; }
 template <class T> T sign(T const& x) { return (x > 0) - (x < 0); }
 
-void* operator new(size_t size);
-void operator delete(void* ptr);
-
-inline int round_to_int(float f) {
-    return int(f + 0.50001f - (f < 0));
-}
-
-inline float mix(float a, float b, float x) {
-    return a + (b - a) * x;
-}
-
-inline float smooth(float x) {
-    return x * x * (3 - 2 * x);
-}
+inline int   round_to_int(float f) { return int(f + 0.50001f - (f < 0)); }
+inline float mix(float a, float b, float x) { return a + (b - a) * x; }
+inline float smooth(float x) { return x * x * (3 - 2 * x); }
 
 struct Random {
     enum { MAX = 32767 };
@@ -39,7 +28,7 @@ struct Random {
 };
 
 
-int rand_int(int a, int b);
+int   rand_int(int a, int b);
 float rand_float(float a, float b);
 
 
@@ -82,5 +71,3 @@ struct Rect {
         return abs(s) < abs(t) ? s : t;
     }
 };
-
-

@@ -23,6 +23,7 @@ void Hero::init(int x, int y) {
     m_vy       = 0;
     m_airborne = true;
     m_dir      = 1;
+    m_shoot_delay = 0;
 }
 
 
@@ -50,9 +51,16 @@ void Hero::update() {
 
     if (!m_airborne) {
         if (app::input.jump_just_pressed()) {
+            // jump
             m_vy = -7.33333333f;
             m_ry = 0;
             m_airborne = true;
+        }
+    }
+    else {
+        if (app::input.jump_just_released()) {
+            // limit jump hight
+            m_vy = max(m_vy, -1.5f);
         }
     }
 
@@ -63,7 +71,6 @@ void Hero::update() {
         m_ry -= my;
         if (move_y(my)) {
             m_vy = 0;
-
             m_ry = 0;
             m_airborne = false;
         }
@@ -72,7 +79,9 @@ void Hero::update() {
         }
     }
 
-    if (app::input.shoot_just_pressed()) {
+    if (m_shoot_delay > 0) --m_shoot_delay;
+    else if (app::input.shoot) {
+        m_shoot_delay = 12;
         world::actors.append(new Bullet(m_rect.center_x() + m_dir * 5,
                                         m_rect.center_y(),
                                         m_dir));

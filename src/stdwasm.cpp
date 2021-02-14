@@ -15,13 +15,20 @@ IMPORT void print(char const* ptr);
 //}
 //void free(void* ptr) {}
 
+void* operator new(size_t size) {
+    assert((size & 3) == 0);
+    return malloc(size);
+}
+
+void operator delete(void* ptr) {
+   free(ptr);
+}
 
 int strlen(char const* str) {
     int l = 0;
     while (*str++) ++l;
     return l;
 }
-
 
 int vsprintf(char *str, const char *fmt, va_list args) {
     char*       p = str;

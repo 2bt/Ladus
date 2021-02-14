@@ -20,6 +20,7 @@ private:
     float m_vy;
     bool  m_airborne;
     int   m_dir;
+    int   m_shoot_delay;
 };
 
 
