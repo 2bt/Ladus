@@ -26,28 +26,40 @@ void Actor::collide(Actor* a) {
 
 bool Actor::move_x(int d) {
     m_rect.x += d;
-    int o = 0;
+    int    o  = 0;
+    Solid* cs = nullptr;
     for (Solid* s : world::solids) {
+        if (!s->collidable()) continue;
         if (s->jumpthrough()) continue;
         int oo = s->rect().overlap_x(m_rect);
-        if (abs(oo) > abs(o)) o = oo;
+        if (abs(oo) > abs(o)) {
+            o = oo;
+            cs = s;
+        }
     }
     if (o == 0) return false;
     m_rect.x -= o;
+    cs->collide(this);
     return true;
 }
 
 bool Actor::move_y(int d) {
     int bottom = m_rect.y + m_rect.h;
     m_rect.y += d;
-    int o = 0;
+    int    o  = 0;
+    Solid* cs = nullptr;
     for (Solid* s : world::solids) {
+        if (!s->collidable()) continue;
         if (s->jumpthrough() && bottom > s->rect().y) continue;
         int oo = s->rect().overlap_y(m_rect);
-        if (abs(oo) > abs(o)) o = oo;
+        if (abs(oo) > abs(o)) {
+            o = oo;
+            cs = s;
+        }
     }
     if (o == 0) return false;
     m_rect.y -= o;
+    cs->collide(this);
     return true;
 }
 

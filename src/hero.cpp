@@ -81,7 +81,7 @@ void Hero::update() {
 
     if (m_shoot_delay > 0) --m_shoot_delay;
     else if (app::input.shoot) {
-        m_shoot_delay = 12;
+        m_shoot_delay = 10;
         world::actors.append(new Bullet(m_rect.center_x() + m_dir * 5,
                                         m_rect.center_y(),
                                         m_dir));

@@ -13,6 +13,7 @@ pkg_check_modules(SDL REQUIRED
 add_executable(ladus
     src/main.cpp
     src/surface.cpp
+    src/surfaces.cpp
     src/util.cpp
     src/app.cpp
     src/world.cpp
