@@ -1,7 +1,8 @@
 #include "app.hpp"
 #include "world.hpp"
-#include "actor.hpp"
 #include "surfaces.hpp"
+#include "actor.hpp"
+#include "hero.hpp"
 
 
 Solid::Solid(int x, int y, bool jumpthrough)
@@ -56,7 +57,16 @@ void Crate::update() {
 void Crate::collide(Actor* a) {
     if (a->type() == ActorType::Bullet) {
         --m_shield;
-        if (m_shield <= 0) m_collidable = false;
+        if (m_shield <= 0) {
+            m_collidable = false;
+            for (int i = 0; i < 16; ++i) {
+                Particle* p = new Particle(m_rect.x + 4 + i % 4 * 8,
+                                           m_rect.y + 4 + i / 4 * 8,
+                                           8, Color(133 / 2, 76 / 2, 48 / 2));
+                p->m_ttl = rand_int(10, 30);
+                world::actors.append(p);
+            }
+        }
     }
 }
 void Crate::draw() const {

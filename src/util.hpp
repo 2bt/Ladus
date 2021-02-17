@@ -32,6 +32,12 @@ int   rand_int(int a, int b);
 float rand_float(float a, float b);
 
 
+inline uint32_t Color(uint32_t rgb) {
+    return ((rgb >> 16) & 0x0000ff)
+         | ((rgb      ) & 0x00ff00)
+         | ((rgb << 16) & 0xff0000)
+         | 0xff000000;
+}
 inline uint32_t Color(int r, int g, int b, int a=255) {
     return (clamp(a, 0, 255) << 24)
          | (clamp(b, 0, 255) << 16)

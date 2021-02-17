@@ -34,21 +34,23 @@ public:
     void collide(Actor* a);
     void draw() const;
 private:
+    void burst();
     int m_dir;
 };
 
 
 class Particle : public Actor {
 public:
-    Particle(int x, int y);
+    Particle(int x, int y, int size, uint32_t color);
     void update();
     void collide(Actor* a) {}
     void draw() const;
-private:
-    float m_rx = 0;
-    float m_ry = 0;
-    float m_vx;
-    float m_vy;
-    int   m_ttl;
+//private:
+    float    m_rx = 0;
+    float    m_ry = 0;
+    float    m_vx;
+    float    m_vy;
+    int      m_ttl;
+    uint32_t m_color;
 };
 

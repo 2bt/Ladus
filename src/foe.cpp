@@ -74,9 +74,6 @@ void FoeBullet::update() {
 
     if (move_x(m_dir * 6)) {
         m_alive = false;
-        for (int i = 0; i < 10; ++i) {
-            world::actors.append(new Particle(m_rect.center_x() + m_dir * 4, m_rect.center_y()));
-        }
     }
 
     if (!m_rect.overlap(world::camera)) {

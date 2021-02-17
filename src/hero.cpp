@@ -93,40 +93,45 @@ void Hero::draw() const {
 
 
 void Bullet::update() {
-
     if (move_x(m_dir * 6)) {
-        m_alive = false;
-        for (int i = 0; i < 10; ++i) {
-            world::actors.append(new Particle(m_rect.center_x() + m_dir * 4, m_rect.center_y()));
-        }
+        burst();
         return;
     }
-
     if (!m_rect.overlap(world::camera)) {
         m_alive = false;
     }
 }
 void Bullet::collide(Actor* a) {
+    burst();
+}
+void Bullet::burst() {
     m_alive = false;
     for (int i = 0; i < 10; ++i) {
-        world::actors.append(new Particle(m_rect.center_x() + m_dir * 4, m_rect.center_y()));
+        world::actors.append(new Particle(m_rect.center_x() + m_dir * 4,
+                                          m_rect.center_y(),
+                                          2,
+                                          Color(200, 200, 200)));
     }
-
 }
 void Bullet::draw() const {
     app::screen.rect(m_rect.relative(world::camera), Color(200, 200, 200));
 }
 
 
-Particle::Particle(int x, int y) : Actor(ActorType::Particle) {
-    m_rect = { x - 1, y - 1, 2, 2 };
+Particle::Particle(int x, int y, int size, uint32_t color)
+    : Actor(ActorType::Particle)
+    , m_color(color)
+{
+    m_rect = { x - size / 2, y - size / 2, size, size };
     m_vx   = rand_float(-4, 2);
     m_vy   = rand_float(-4, 1);
     m_ttl  = rand_int(1, 8);
 }
 void Particle::update() {
-
     m_alive = m_ttl-- > 0;
+
+    m_vx *= 0.98;
+    m_vy *= 0.98;
 
     m_rx += m_vx;
     int mx = round_to_int(m_rx);
@@ -148,6 +153,6 @@ void Particle::update() {
     }
 }
 void Particle::draw() const {
-    app::screen.rect(m_rect.relative(world::camera), Color(200, 200, 200));
+    app::screen.rect_filled(m_rect.relative(world::camera), m_color);
 }
 
