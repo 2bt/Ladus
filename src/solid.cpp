@@ -64,6 +64,13 @@ void Crate::collide(Actor* a) {
                                            m_rect.y + 4 + i / 4 * 8,
                                            8, Color(133 / 2, 76 / 2, 48 / 2));
                 p->m_ttl = rand_int(10, 30);
+
+                float ang   = rand_float(0, 2 * M_PI);
+                float speed = rand_float(3, 5);
+                p->m_vx = my_sin(ang) * speed;
+                p->m_vy = my_cos(ang) * speed - 2;
+
+
                 world::actors.append(p);
             }
         }

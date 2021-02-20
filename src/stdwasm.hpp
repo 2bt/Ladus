@@ -17,6 +17,10 @@ int   vsprintf(char* str, const char* fmt, va_list args);
 int   sprintf(char* str, char const* fmt, ...);
 int   printf(char const* fmt, ...);
 
+#define M_PI 3.141592653589793f
+
+#define floorf  __builtin_floorf
+
 //#define assert(x) ((void)0)
 #define assert(x) ((x) || printf("assertion `%s` failed\n", #x))
 #else
@@ -25,5 +29,6 @@ int   printf(char const* fmt, ...);
 #include <cstdio>
 #include <cstdint>
 #include <cassert>
+#include <cmath>
 
 #endif

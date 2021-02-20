@@ -8,9 +8,12 @@ template <class T> T clamp(T const& v, T const& mi, T const& ma) { return max(mi
 template <class T> T abs(T const& x) { return x < 0 ? -x : x; }
 template <class T> T sign(T const& x) { return (x > 0) - (x < 0); }
 
-inline int   round_to_int(float f) { return int(f + 0.50001f - (f < 0)); }
+inline int   round_to_int(float f) { return floorf(f + 0.5000f); }
 inline float mix(float a, float b, float x) { return a + (b - a) * x; }
 inline float smooth(float x) { return x * x * (3 - 2 * x); }
+
+float my_sin(float x);
+float my_cos(float x);
 
 struct Random {
     enum { MAX = 32767 };

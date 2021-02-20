@@ -7,7 +7,7 @@
 
 namespace {
 
-int     g_tick = 999;
+int g_tick = 0;
 
 } // namespace
 
@@ -50,6 +50,7 @@ void app::update(uint32_t input_bits) {
 
     world::update();
 }
+
 
 
 void app::draw() {

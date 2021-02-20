@@ -4,6 +4,6 @@
 
 namespace surfaces {
     void init();
-    extern Surface font;
     extern Surface tile;
+    extern Surface font;
 }
