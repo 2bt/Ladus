@@ -93,8 +93,10 @@ void Hero::draw() const {
 
 
 void Bullet::update() {
-    if (move_x(m_dir * 6)) {
+    Solid* s = move_x(m_dir * 6);
+    if (s) {
         burst();
+        if (s->type() == SolidType::Crate) s->get<Crate>()->hit();
         return;
     }
     if (!m_rect.overlap(world::camera)) {

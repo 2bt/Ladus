@@ -24,7 +24,6 @@ public:
     template<class T> T const* get() const { return (T const*) this; }
 
     void update();
-    void collide(Actor* a);
     void draw() const;
 
 protected:
@@ -45,8 +44,9 @@ public:
     }
 
     void update();
-    void collide(Actor* a);
     void draw() const;
+
+    void hit();
 
 private:
     int m_shield = 5;

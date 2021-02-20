@@ -24,7 +24,7 @@ void Actor::collide(Actor* a) {
 }
 
 
-bool Actor::move_x(int d) {
+Solid* Actor::move_x(int d) {
     m_rect.x += d;
     int    o  = 0;
     Solid* cs = nullptr;
@@ -37,13 +37,12 @@ bool Actor::move_x(int d) {
             cs = s;
         }
     }
-    if (o == 0) return false;
+    if (o == 0) return nullptr;
     m_rect.x -= o;
-    cs->collide(this);
-    return true;
+    return cs;
 }
 
-bool Actor::move_y(int d) {
+Solid* Actor::move_y(int d) {
     int bottom = m_rect.y + m_rect.h;
     m_rect.y += d;
     int    o  = 0;
@@ -57,9 +56,8 @@ bool Actor::move_y(int d) {
             cs = s;
         }
     }
-    if (o == 0) return false;
+    if (o == 0) return nullptr;
     m_rect.y -= o;
-    cs->collide(this);
-    return true;
+    return cs;
 }
 

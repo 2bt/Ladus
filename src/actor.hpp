@@ -21,6 +21,7 @@ uint32_t Mask(ActorType t, Args... args) {
 }
 
 
+class Solid;
 
 class Actor {
 public:
@@ -35,8 +36,8 @@ public:
     template<class T> T* get() { return (T*) this; }
     template<class T> T const* get() const { return (T const*) this; }
 
-    bool move_x(int d);
-    bool move_y(int d);
+    Solid* move_x(int d);
+    Solid* move_y(int d);
 
     void update();
     void collide(Actor* a);
